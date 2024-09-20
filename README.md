@@ -11,6 +11,7 @@ cette application en une application web.
 
 Une **version textuelle** dans le terminal est disponible sur la branche par défaut, et
 une **version graphique (utilisant CustomTkinter)** est implémentée sur la branche customtkinter.
+Une **version Pyside6** est également disponible sur la branche pyside6.
 
 ## Installation des dépendances
 

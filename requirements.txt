@@ -18,10 +18,23 @@ packaging==24.1
     # via customtkinter
 pygments==2.18.0
     # via rich
+pyside6==6.7.2
+    # via exemple-mvc (pyproject.toml)
+pyside6-addons==6.7.2
+    # via pyside6
+pyside6-essentials==6.7.2
+    # via
+    #   pyside6
+    #   pyside6-addons
 rich==13.8.1
     # via typer
 shellingham==1.5.4
     # via typer
+shiboken6==6.7.2
+    # via
+    #   pyside6
+    #   pyside6-addons
+    #   pyside6-essentials
 sqlparse==0.5.1
     # via django
 typer==0.12.5

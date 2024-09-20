@@ -1,3 +1,4 @@
+from . import messages
 from .models import Book
 
 
@@ -14,7 +15,9 @@ def add_book(title, author):
     Returns:
         Book: L'objet livre qui a été ajouté à la bibliothèque.
     """
-    return Book.objects.add_to_library(title=title, author=author)
+    book = Book.objects.add_to_library(title=title, author=author)
+    messages.success(f"Livre ajouté : {title} par {author}")
+    return book
 
 
 def list_books():
@@ -26,7 +29,10 @@ def list_books():
     Returns:
         QuerySet: Un queryset contenant tous les livres de la bibliothèque.
     """
-    return Book.objects.all()
+    books = Book.objects.all()
+    if not books:
+        messages.info("Aucun livre disponible.")
+    return books
 
 
 def search_books_by_title(search_title):
@@ -42,7 +48,10 @@ def search_books_by_title(search_title):
     Returns:
         QuerySet: Un queryset contenant les livres correspondants à la recherche.
     """
-    return Book.objects.search_in_title(search_title)
+    books = Book.objects.search_in_title(search_title)
+    if not books:
+        messages.info("Aucun livre trouvé correspondant à '{search_title}'.")
+    return books
 
 
 def remove_book(book):
@@ -58,3 +67,4 @@ def remove_book(book):
         None
     """
     book.delete()
+    messages.info(f"Livre supprimé : {book.title} par {book.author}")

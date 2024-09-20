@@ -1,9 +1,35 @@
+from functools import wraps
+
 import typer
 from django.core.management import call_command
 
-from library import controllers
+from library import controllers, messages
 
 app = typer.Typer()
+
+
+def display_messages():
+    """
+    Affiche une liste de messages avec un symbole distinctif selon le type de message.
+
+    Affiche:
+        Les messages avec un symbole distinctif pour chaque type:
+        - ✅ pour succès.
+        - ❌ pour erreur.
+        - ℹ️ pour information.
+    """
+    for message in messages.get_messages():
+        msg_type = message.get("type")
+        msg_text = message.get("text")
+
+        if msg_type == "success":
+            typer.echo(f"\n✅ Succès : {msg_text}")
+        elif msg_type == "error":
+            typer.echo(f"\n❌ Erreur : {msg_text}")
+        elif msg_type == "info":
+            typer.echo(f"\nℹ️ Info : {msg_text}")
+        else:
+            typer.echo(f"\n🔔 Autre : {msg_text}")
 
 
 @app.command()
@@ -14,7 +40,8 @@ def init():
     Cette commande exécute les migrations nécessaires pour initialiser la base de données.
     """
     call_command("migrate")
-    typer.echo("-> Base de données initialisée.")
+    messages.info("Base de données initialisée.")
+    display_messages()
 
 
 @app.command()
@@ -25,7 +52,8 @@ def makemigrations():
     Cette commande génère les migrations basées sur les modifications apportées aux modèles.
     """
     call_command("makemigrations")
-    typer.echo("-> Les migrations ont été créées avec succès.")
+    messages.info("Les migrations ont été créées avec succès.")
+    display_messages()
 
 
 @app.command()
@@ -43,7 +71,7 @@ def add_book(title: str, author: str):
         $ python manage.py add_book "Le Petit Prince" "Antoine de Saint-Exupéry"
     """
     book = controllers.add_book(title, author)
-    typer.echo(f"-> Livre ajouté : {title} par {author}")
+    display_messages()
 
 
 @app.command()
@@ -55,11 +83,9 @@ def list_books():
     Si aucun livre n'est trouvé, un message informatif est affiché.
     """
     books = controllers.list_books()
-    if not books:
-        typer.echo("-> Aucun livre trouvé.")
-    else:
-        for book in books:
-            typer.echo(f"- {book.title} par {book.author}")
+    for book in books:
+        typer.echo(f"- {book.title} par {book.author}")
+    display_messages()
 
 
 @app.command()
@@ -77,18 +103,17 @@ def remove_books(in_title_search: str):
         $ python manage.py remove_books "Prince"
     """
     books = controllers.search_books_by_title(in_title_search)
-    if not books:
-        typer.echo(f"-> Aucun livre trouvé avec '{in_title_search}'.")
-    else:
-        for book in books:
-            confirm = typer.confirm(
-                f">> Êtes-vous sûr de vouloir supprimer le livre '{book.title}'?"
-            )
-            if confirm:
-                controllers.remove_book(book)
-                typer.echo(f"-> Le livre '{book.title}' a été supprimé.")
-            else:
-                typer.echo(f"-> La suppression de '{book.title}' annulée.")
+    for book in books:
+        confirm = typer.confirm(
+            f">> Êtes-vous sûr de vouloir supprimer le livre '{book.title}'?"
+        )
+        if confirm:
+            controllers.remove_book(book)
+        else:
+            messages.info(f"-> La suppression de '{book.title}' annulée.")
+        display_messages()
+
+    display_messages()
 
 
 @app.command()
@@ -99,18 +124,17 @@ def remove_all_books():
     Cette commande demande confirmation avant de supprimer chaque livre présent dans la base de données.
     """
     books = controllers.list_books()
-    if not books:
-        typer.echo(f"-> Aucun livre trouvé dans votre bibliothèque.")
-    else:
-        for book in books:
-            confirm = typer.confirm(
-                f">> Êtes-vous sûr de vouloir supprimer le livre '{book.title}'?"
-            )
-            if confirm:
-                controllers.remove_book(book)
-                typer.echo(f"-> Le livre '{book.title}' a été supprimé.")
-            else:
-                typer.echo(f"-> La suppression de '{book.title}' annulée.")
+    for book in books:
+        confirm = typer.confirm(
+            f">> Êtes-vous sûr de vouloir supprimer le livre '{book.title}'?"
+        )
+        if confirm:
+            controllers.remove_book(book)
+        else:
+            messages.info(f"La suppression de '{book.title}' annulée.")
+        display_messages()
+
+    display_messages()
 
 
 if __name__ == "__main__":

@@ -1,4 +1,28 @@
-from . import controllers
+from . import messages, controllers
+
+
+def display_messages():
+    """
+    Affiche une liste de messages avec un symbole distinctif selon le type de message.
+
+    Affiche:
+        Les messages avec un symbole distinctif pour chaque type:
+        - ✅ pour succès.
+        - ❌ pour erreur.
+        - ℹ️ pour information.
+    """
+    for message in messages.get_messages():
+        msg_type = message.get("type")
+        msg_text = message.get("text")
+
+        if msg_type == "success":
+            print(f"\n✅ Succès : {msg_text}")
+        elif msg_type == "error":
+            print(f"\n❌ Erreur : {msg_text}")
+        elif msg_type == "info":
+            print(f"\nℹ️ Info : {msg_text}")
+        else:
+            print(f"\n🔔 Autre : {msg_text}")
 
 
 def show_books():
@@ -12,11 +36,11 @@ def show_books():
         function: Retourne la fonction `display_menu` pour revenir au menu principal.
     """
     books = controllers.list_books()
-    if not books:
-        print("-> Aucun livre disponible.")
-    else:
-        for book in books:
-            print(f"-> {book.title} par {book.author}")
+    for i, book in enumerate(books):
+        if not i:
+            print()
+        print(f"-> {book.title} par {book.author}")
+    display_messages()
     return display_menu
 
 
@@ -34,7 +58,7 @@ def prompt_add_book():
     title = input(">> Entrez le titre du livre : ")
     author = input(">> Entrez l'auteur du livre : ")
     controllers.add_book(title, author)
-    print(f"-> Livre ajouté : {title} par {author}")
+    display_messages()
     return display_menu
 
 
@@ -61,10 +85,6 @@ def prompt_remove_book():
     # Recherche les livres correspondants au critère
     books = controllers.search_books_by_title(search_title)
 
-    if not books:
-        print(f"-> Aucun livre trouvé correspondant à '{search_title}'.")
-        return display_menu
-
     # Demander confirmation pour chaque livre
     for book in books:
         confirmation = input(
@@ -72,12 +92,13 @@ def prompt_remove_book():
         ).lower()
         if confirmation == "o":
             controllers.remove_book(book)
-            print(f"-> Livre supprimé : {book.title} par {book.author}")
         elif confirmation == "m":
             return display_menu
         else:
-            print(f"-> Livre conservé : {book.title} par {book.author}")
+            messages.info(f"Livre conservé : {book.title} par {book.author}")
+        display_messages()
 
+    display_messages()
     return display_menu
 
 

@@ -1,29 +1,22 @@
-import customtkinter as ctk
-from .utils import CenteredModalMixin
+from PySide6.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout
+
+from .utils import CenteredDialogMixin
 
 
-class MessageModal(ctk.CTkToplevel, CenteredModalMixin):
+class MessageDialog(QDialog, CenteredDialogMixin):
     def __init__(self, parent, message, message_type="info"):
         super().__init__(parent)
-        self.title("Message")
-        self.geometry("300x200")
-        self.configure(fg_color="white")
+        self.setWindowTitle("Message")
+        self.setGeometry(300, 300, 300, 150)
+        self.center_on_parent()
 
+        layout = QVBoxLayout(self)
+
+        label = QLabel(message, self)
         if message_type == "error":
-            self.message_label = ctk.CTkLabel(
-                self, text=message, font=("Arial", 20), text_color="red"
-            )
-        else:
-            self.message_label = ctk.CTkLabel(
-                self, text=message, font=("Arial", 20), text_color="black"
-            )
+            label.setStyleSheet("color: red;")
+        layout.addWidget(label)
 
-        self.message_label.place(relx=0.5, rely=0.4, anchor="center")
-
-        close_button = ctk.CTkButton(self, text="Fermer", command=self.close)
-        close_button.place(relx=0.5, rely=0.6, anchor="center")
-
-        self.grab_set()
-
-    def close(self):
-        self.destroy()
+        close_button = QPushButton("Fermer", self)
+        close_button.clicked.connect(self.accept)
+        layout.addWidget(close_button)

@@ -1,35 +1,32 @@
-from tkinter import Menu
+import sys
+
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMenuBar
 
 
-class AppMenu(Menu):
+class AppMenu(QMenuBar):
     def __init__(self, parent):
         super().__init__(parent)
 
         # Menu "Fichier"
-        file_menu = Menu(self, tearoff=0)
-        file_menu.add_command(
-            label="Ajouter un livre",
-            accelerator="Ctrl+N",
-            command=parent.open_add_book_modal,
-        )
-        file_menu.add_command(
-            label="Supprimer un livre",
-            accelerator="Ctrl+D",
-            command=parent.open_remove_book_modal,
-        )
-        file_menu.add_separator()
-        file_menu.add_command(
-            label="Quitter", accelerator="Ctrl+Q", command=parent.quit
-        )
+        file_menu = self.addMenu("Fichier")
 
-        # Ajouter le menu à la fenêtre principale
-        self.add_cascade(label="Fichier", menu=file_menu)
+        # Action "Ajouter un livre"
+        add_book_action = QAction("Ajouter un livre", self)
+        add_book_action.setShortcut("Ctrl+N")
+        add_book_action.triggered.connect(parent.open_add_book_dialog)
+        file_menu.addAction(add_book_action)
 
-        # Assigner les raccourcis clavier dans la fenêtre principale
-        parent.bind_all(
-            "<Control-n>", lambda event: parent.open_add_book_modal()
-        )
-        parent.bind_all(
-            "<Control-d>", lambda event: parent.open_remove_book_modal()
-        )
-        parent.bind_all("<Control-q>", lambda event: parent.quit())
+        # Action "Supprimer un livre"
+        remove_book_action = QAction("Supprimer un livre", self)
+        remove_book_action.setShortcut("Ctrl+D")
+        remove_book_action.triggered.connect(parent.open_remove_book_dialog)
+        file_menu.addAction(remove_book_action)
+
+        file_menu.addSeparator()
+
+        # Action "Supprimer un livre"
+        quit_action = QAction("Quitter", self)
+        quit_action.setShortcut("Ctrl+Q")
+        quit_action.triggered.connect(parent.close_application)
+        file_menu.addAction(quit_action)

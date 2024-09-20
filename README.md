@@ -7,6 +7,11 @@ Cet exemple utilise Django pour la gérer la base de données et la logique mét
 Ainsi, la séparation des préoccupation rend relativement aisé la transformation de
 cette application en une application web.
 
+## Versions texte et graphique
+
+Une **version textuelle** dans le terminal est disponible sur la branche par défaut, et
+une **version graphique (utilisant CustomTkinter)** est implémentée sur la branche customtkinter.
+
 ## Installation des dépendances
 
 Pour installer les dépendances du projet, commencer par **créer et activez un environnement
